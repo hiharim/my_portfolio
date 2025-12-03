@@ -1,278 +1,111 @@
 import 'package:flutter/material.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
+import '../utils/app_colors.dart';
+import 'pixel_box.dart';
+import 'pixel_character.dart';
+import 'pixel_button.dart';
 
 class HeroSection extends StatelessWidget {
-  const HeroSection({super.key});
+  final String lang;
+  const HeroSection({super.key, required this.lang});
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isDesktop = screenWidth > 800;
+    final isDesktop = MediaQuery.of(context).size.width > 600;
 
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      padding: EdgeInsets.symmetric(
-        horizontal: isDesktop ? 100 : 24,
-        vertical: 40,
+    return PixelBox(
+      borderColor: AppColors.primary,
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: isDesktop
+            ? Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _buildAbout(),
+                  const SizedBox(width: 32),
+                  Expanded(child: _buildContent()),
+                ],
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(child: _buildAbout()),
+                  const SizedBox(height: 24),
+                  _buildContent(),
+                ],
+              ),
       ),
-      child: isDesktop ? _buildDesktopLayout() : _buildMobileLayout(),
     );
   }
 
-  Widget _buildDesktopLayout() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(child: _buildTextContent()),
-        const SizedBox(width: 60),
-        Expanded(child: _buildIdeaVisual()),
-      ],
-    );
-  }
-
-  Widget _buildMobileLayout() {
+  Widget _buildContent() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _buildIdeaVisual(),
-        const SizedBox(height: 40),
-        _buildTextContent(),
-      ],
-    );
-  }
-
-  Widget _buildTextContent() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                const Color(0xFF6C63FF).withValues(alpha: 0.15),
-                const Color(0xFFFF6B9D).withValues(alpha: 0.15),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.lightbulb, color: Color(0xFFFFB800), size: 18),
-              SizedBox(width: 8),
-              Text(
-                'Ideas → Reality',
-                style: TextStyle(
-                  color: Color(0xFF6C63FF),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 24),
-        const Text(
-          '안녕하세요,',
-          style: TextStyle(
-            fontSize: 24,
-            color: Color(0xFF5D6470),
-          ),
-        ),
-        const SizedBox(height: 8),
-        ShaderMask(
-          shaderCallback: (bounds) => const LinearGradient(
-            colors: [Color(0xFF6C63FF), Color(0xFFFF6B9D), Color(0xFF00B4D8)],
-          ).createShader(bounds),
-          child: const Text(
-            'Android & Flutter\n개발자입니다',
-            style: TextStyle(
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              height: 1.2,
-            ),
+        Text(
+          lang == 'ko' ? 'ANDROID & FLUTTER\n개발자' : 'ANDROID & FLUTTER\nDEVELOPER',
+          style: const TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+            height: 1.2,
           ),
         ),
         const SizedBox(height: 16),
-        SizedBox(
-          height: 50,
-          child: AnimatedTextKit(
-            repeatForever: true,
-            animatedTexts: [
-              TypewriterAnimatedText(
-                '📱 3년차 모바일 개발자',
-                textStyle: const TextStyle(
-                  fontSize: 20,
-                  color: Color(0xFF5D6470),
-                ),
-                speed: const Duration(milliseconds: 80),
-              ),
-              TypewriterAnimatedText(
-                '🤖 Android Native + Flutter 전문',
-                textStyle: const TextStyle(
-                  fontSize: 20,
-                  color: Color(0xFF5D6470),
-                ),
-                speed: const Duration(milliseconds: 80),
-              ),
-              TypewriterAnimatedText(
-                '💡 아이디어를 앱으로 실현합니다',
-                textStyle: const TextStyle(
-                  fontSize: 20,
-                  color: Color(0xFF5D6470),
-                ),
-                speed: const Duration(milliseconds: 80),
-              ),
-            ],
-          ),
+        Text(
+          lang == 'ko' ? '3년차 · 아이디어를 앱으로' : '3 YRS EXP · IDEAS TO APPS',
+          style: const TextStyle(fontSize: 20, color: AppColors.textSecondary),
         ),
-        const SizedBox(height: 40),
-        Row(
+        const SizedBox(height: 24),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
           children: [
-            _buildCTAButton(
-              '프로젝트 보기',
-              const Color(0xFF6C63FF),
-              Icons.rocket_launch,
+            PixelButton(
+              text: lang == 'ko' ? '프로젝트' : 'PROJECTS',
+              color: AppColors.primary,
+              onPressed: () {},
             ),
-            const SizedBox(width: 16),
-            _buildOutlineButton('연락하기', Icons.mail_outline),
+            PixelButton(
+              text: lang == 'ko' ? '연락' : 'CONTACT',
+              color: AppColors.accent,
+              onPressed: () {},
+            ),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildCTAButton(String text, Color color, IconData icon) {
+  Widget _buildAbout() {
     return Container(
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF6C63FF), Color(0xFFFF6B9D)],
-        ),
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF6C63FF).withValues(alpha: 0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
+        color: AppColors.background,
+        border: Border.all(color: AppColors.border, width: 3),
       ),
-      child: ElevatedButton.icon(
-        onPressed: () {},
-        icon: Icon(icon, size: 20),
-        label: Text(text),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          shadowColor: Colors.transparent,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOutlineButton(String text, IconData icon) {
-    return OutlinedButton.icon(
-      onPressed: () {},
-      icon: Icon(icon, size: 20),
-      label: Text(text),
-      style: OutlinedButton.styleFrom(
-        foregroundColor: const Color(0xFF2D3142),
-        side: const BorderSide(color: Color(0xFFDDE1E6)),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildIdeaVisual() {
-    return Center(
-      child: Stack(
-        alignment: Alignment.center,
+      child: Column(
         children: [
-          Container(
-            width: 300,
-            height: 300,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  const Color(0xFF6C63FF).withValues(alpha: 0.15),
-                  Colors.transparent,
-                ],
-              ),
+          const PixelCharacter(),
+          const SizedBox(height: 12),
+          const Text(
+            '[NAME]',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
             ),
           ),
+          const SizedBox(height: 6),
           Container(
-            width: 200,
-            height: 200,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFF6C63FF), Color(0xFFFF6B9D)],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF6C63FF).withValues(alpha: 0.3),
-                  blurRadius: 40,
-                  spreadRadius: 10,
-                ),
-              ],
-            ),
-            child: const Icon(
-              Icons.lightbulb,
-              size: 100,
-              color: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            color: AppColors.accent.withValues(alpha: 0.2),
+            child: Text(
+              'LV.3',
+              style: const TextStyle(fontSize: 14, color: AppColors.accent),
             ),
           ),
-          ..._buildFloatingBubbles(),
         ],
       ),
     );
-  }
-
-  List<Widget> _buildFloatingBubbles() {
-    final bubbles = [
-      (Icons.phone_android, -120.0, -80.0),
-      (Icons.code, 100.0, -60.0),
-      (Icons.cloud, -80.0, 100.0),
-      (Icons.auto_awesome, 120.0, 80.0),
-      (Icons.psychology, 0.0, -130.0),
-    ];
-
-    return bubbles.map((bubble) {
-      return Positioned(
-        left: 150 + bubble.$2,
-        top: 150 + bubble.$3,
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF6C63FF).withValues(alpha: 0.15),
-                blurRadius: 15,
-                offset: const Offset(0, 5),
-              ),
-            ],
-          ),
-          child: Icon(
-            bubble.$1,
-            color: const Color(0xFF6C63FF),
-            size: 24,
-          ),
-        ),
-      );
-    }).toList();
   }
 }
